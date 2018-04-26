@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>dateyearmonth自写插件</title>
+<link rel="stylesheet" type="text/css" href="css/dateyearmonth.css"/>
+<script src="js/dateyearmonth.js"></script>
+
+
+</head>
+
+<body>
+<div style="padding-right:50px; margin-top: 50px; padding-left: 50px">
+<input type="text" id="txt_calendar" placeholder="获取时间" value="" data-format="yyyy-mm - yyyy-mm" data-max-year="2017" data-min-year="2000" readonly="readonly"/>
+</div>
+</body>
+<script type="text/javascript">
+     //document.getElementById("txt_calendar").dateyearmonth('txt_calendar'); 
+	 var myDate1 = new dateyearmonth({id:'txt_calendar'});
+</script>
+</html>
