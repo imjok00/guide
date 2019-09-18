@@ -3,10 +3,10 @@ highlighter: pygments
 permalink: /posts/:title.html
 excerpt_separator: "<!-- more -->"
 
-github: imjok
+github: imjok00
 author: "jokjok"
 email: sunhuang00@126.com
-name: "jok-yuan"
+name: "imjok00"
 url: http://www.imjok.com
 domain: www.imjok.com
 all_categories: [
