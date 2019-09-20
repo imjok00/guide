@@ -1,0 +1,117 @@
+---
+layout: post
+category: "juc"
+title:  "AbstractQueuedLongSynchronizer源码解析"
+tags: [JUC,lock]
+---
+# AbstractQueuedLongSynchronizer（AQS）队列同步器
+这是JUC下lock实现最基础的理论了，通过它将lock在java层面得到淋漓的实现，他本身就包含了很多锁优化的思路。<br>
+
+我这边需要对Doug Lea的注释做一些简单的翻译，好让不熟悉的同学能先有一个基础的概念，才能更好的理解源码里的思想。
+AQS作为阻塞锁和同步相关的基础框架，他依赖于一个FIFO的队列和一个原子值来表示状态，子类必须定义更改这个状态的方法。
+AQS的子类通常作为内部实现类	，实现其同步属性。AQS支持排他锁和共享锁，具体例子参照ReadWriteLock。
+子类通过重定义以下方法来达到各自的目的，实现各自的使用场景
+(```)
+**tryAcquire**
+**tryRelease**
+**tryAcquireShared**
+**tryReleaseShared**
+**isHeldExclusively**
+(```)
+
+正式开始我们的源码分析，先看下类的继承结构关系
+(```)
+public abstract class AbstractQueuedSynchronizer
+    extends AbstractOwnableSynchronizer
+    implements java.io.Serializable
+(```)
+其中需要介绍的部分就是AbstractOwnableSynchronizer，他的功能是set和get当前拥有锁的线程
+
+然后我们接下来遇到第一个关键类
+(```)
+$\color{red}{
+这是在等待队列中的节点类。
+他通过prev，next双向链表的方式组成虚拟的队列
+ >      +------+  prev +-----+       +-----+
+ > head |      | <---- |     | <---- |     |  tail
+ >      +------+       +-----+       +-----+
+}$
+static final class Node {
+    $\color{red}{共享模式下的等待节点标示}$
+    static final Node SHARED = new Node();
+
+    $\color{red}{独占模式下的等待节点标示}$
+    static final Node EXCLUSIVE = null;
+
+    $\color{red}{waitStatus值之一：表示线程的 cancelled 状态}$
+    static final int CANCELLED =  1;
+
+    $\color{red}{waitStatus值之一：表示线程的 从park中醒来状态}$
+    static final int SIGNAL    = -1;
+
+    $\color{red}{waitStatus值之一：表示线程等待condition}$
+    static final int CONDITION = -2;
+
+    $\color{red}{waitStatus值之一：保证共享模式下线程唤醒行为传播下去}$
+    static final int PROPAGATE = -3;
+
+    $\color{red}{用来标志当前线程的状态，用volatile修饰，通过CAS的方式进行修改}$
+    volatile int waitStatus;
+
+    $\color{red}{前驱节点}$
+    volatile Node prev;
+
+    $\color{red}{后继节点}$
+    volatile Node next;
+
+    $\color{red}{当前节点的线程}$
+    volatile Thread thread;
+
+    /**
+     * Link to next node waiting on condition, or the special
+     * value SHARED.  Because condition queues are accessed only
+     * when holding in exclusive mode, we just need a simple
+     * linked queue to hold nodes while they are waiting on
+     * conditions. They are then transferred to the queue to
+     * re-acquire. And because conditions can only be exclusive,
+     * we save a field by using special value to indicate shared
+     * mode.
+     */
+    Node nextWaiter;
+
+    /**
+     * Returns true if node is waiting in shared mode.
+     */
+    final boolean isShared() {
+        return nextWaiter == SHARED;
+    }
+
+    /**
+     * Returns previous node, or throws NullPointerException if null.
+     * Use when predecessor cannot be null.  The null check could
+     * be elided, but is present to help the VM.
+     *
+     * @return the predecessor of this node
+     */
+    final Node predecessor() throws NullPointerException {
+        Node p = prev;
+        if (p == null)
+            throw new NullPointerException();
+        else
+            return p;
+    }
+
+    Node() {    // Used to establish initial head or SHARED marker
+    }
+
+    Node(Thread thread, Node mode) {     // Used by addWaiter
+        this.nextWaiter = mode;
+        this.thread = thread;
+    }
+
+    Node(Thread thread, int waitStatus) { // Used by Condition
+        this.waitStatus = waitStatus;
+        this.thread = thread;
+    }
+}
+(```)
