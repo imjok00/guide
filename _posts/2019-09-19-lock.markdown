@@ -7,34 +7,36 @@ tags: [JUC,lock]
 # AbstractQueuedSynchronizer（AQS）队列同步器
 这是JUC下lock实现最基础的理论了，通过它将lock在java层面得到淋漓的实现，他本身就包含了很多锁优化的思路。<br>
 
-我这边需要对Doug Lea的注释做一些简单的翻译，好让不熟悉的同学能先有一个基础的概念，才能更好的理解源码里的思想。
-AQS作为阻塞锁和同步相关的基础框架，他依赖于一个FIFO的队列和一个原子值来表示状态，子类必须定义更改这个状态的方法。
-AQS的子类通常作为内部实现类	，实现其同步属性。AQS支持排他锁和共享锁，具体例子参照ReadWriteLock。
-子类通过重定义以下方法来达到各自的目的，实现各自的使用场景
+我会通过对每一行代码的解读，好让不熟悉的同学能先有一个基础的概念，才能更好的理解源码里的思想。<br>
+AQS作为阻塞锁和同步相关的基础框架，他依赖于一个FIFO的队列和一个原子值来表示状态，子类必须定义更改这个状态的方法。<br>
+AQS的子类通常作为内部实现类	，实现其同步属性。AQS支持排他锁和共享锁，具体例子参照ReadWriteLock。<br>
+子类通过重定义以下方法来达到各自的目的，实现各自的使用场景<br>
 (```)
 tryAcquire<br>
-**tryRelease**
-**tryAcquireShared**
-**tryReleaseShared**
-**isHeldExclusively**
+tryRelease<br>
+tryAcquireShared<br>
+tryReleaseShared<br>
+isHeldExclusively<br>
 (```)
 
-正式开始我们的源码分析，先看下类的继承结构关系
+正式开始我们的源码分析，先看下类的继承结构关系<br>
+
 (```)
 public abstract class AbstractQueuedSynchronizer
     extends AbstractOwnableSynchronizer
     implements java.io.Serializable
 (```)
-其中需要介绍的部分就是AbstractOwnableSynchronizer，他的功能是set和get当前拥有锁的线程
 
-然后我们接下来遇到第一个关键类
-(```)
+其中需要介绍的部分就是AbstractOwnableSynchronizer，他的功能是set和get当前拥有锁的线程<br>
+
+然后我们接下来遇到第一个关键类<br>
+
 这是在等待队列中的节点类。
 他通过prev，next双向链表的方式组成虚拟的队列
- >      +------+  prev +-----+       +-----+
- > head |      | <---- |     | <---- |     |  tail
- >      +------+       +-----+       +-----+
-
+ >      +------+  prev +-----+       +-----+ <br>
+ > head |      | <---- |     | <---- |     |  tail <br>
+ >      +------+       +-----+       +-----+ <br>
+(```)
 static final class Node {
     $\color{red}{共享模式下的等待节点标示}$
     static final Node SHARED = new Node();
