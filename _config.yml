@@ -1,4 +1,6 @@
-markdown: kramdown
+markdown: redcarpet
+redcarpet:
+    extensions: ["fenced_code_blocks", "autolink", "tables", "strikethrough"]
 highlighter: pygments
 permalink: /posts/:title.html
 excerpt_separator: "<!-- more -->"
