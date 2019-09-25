@@ -39,10 +39,10 @@ public abstract class AbstractQueuedSynchronizer
 
 {% highlight java %} 
 static final class Node {
-    /**共享模式下的等待节点标示*/
+    //共享模式下的等待节点标示
     static final Node SHARED = new Node();
 
-    ==独占模式下的等待节点标示==
+    //独占模式下的等待节点标示
     static final Node EXCLUSIVE = null;
 
     //waitStatus值之一：表示线程的 cancelled 状态
@@ -69,9 +69,9 @@ static final class Node {
     $\color{red}{当前节点的线程}$
     volatile Thread thread;
 
-    $\color{red}{当在Condition使用时，作为等待condition的后继节点,这里就多做一些说明了。<br>
+    /**当在Condition使用时，作为等待condition的后继节点,这里就多做一些说明了。<br>
     通常我们在使用Condition时都是和lock配套的，当线程获取到锁时，才有资格进入condition，那么当condition条件未满足时，等待队列怎么实现呢，就是这个参数最关键啦！通过这个参数形成一个单向到链表。
-    }$
+    */
     Node nextWaiter;
 
     略
