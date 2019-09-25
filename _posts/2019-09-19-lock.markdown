@@ -37,7 +37,7 @@ public abstract class AbstractQueuedSynchronizer
 
 ![avatar](../assets/1569318103969.jpg)
 
-(```) java
+```java
 static final class Node {
     //共享模式下的等待节点标示
     static final Node SHARED = new Node();
@@ -101,7 +101,7 @@ static final class Node {
         this.thread = thread;
     }
 }
-(```)
+```
 
 以上Node部分介绍完了，是比较好理解的。
 
