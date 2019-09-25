@@ -13,11 +13,11 @@ AQS的子类通常作为内部实现类	，实现其同步属性。AQS支持排�
 子类通过重定义以下方法来达到各自的目的，实现各自的使用场景<br>
 
 ```
-tryAcquire<br>
-tryRelease<br>
-tryAcquireShared<br>
-tryReleaseShared<br>
-isHeldExclusively<br>
+tryAcquire
+tryRelease
+tryAcquireShared
+tryReleaseShared
+isHeldExclusively
 ```
 
 正式开始我们的源码分析，先看下类的继承结构关系<br>
@@ -35,14 +35,14 @@ public abstract class AbstractQueuedSynchronizer
 这是在等待队列中的节点类。
 他通过prev，next双向链表的方式组成虚拟的队列
 
-![avatar](../1569318103969.jpg)
+![avatar](../assets/1569318103969.jpg)
 
-(```)
+(```) java
 static final class Node {
-    $\color{red}{共享模式下的等待节点标示}$
+    //共享模式下的等待节点标示
     static final Node SHARED = new Node();
 
-    $\color{red}{独占模式下的等待节点标示}$
+    //独占模式下的等待节点标示
     static final Node EXCLUSIVE = null;
 
     $\color{red}{waitStatus值之一：表示线程的 cancelled 状态}$
