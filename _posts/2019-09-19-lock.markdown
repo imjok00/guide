@@ -39,7 +39,7 @@ public abstract class AbstractQueuedSynchronizer
 
 ```java
 static final class Node {
-    //共享模式下的等待节点标示
+    <font color=#FF0000 size=3 face="黑体">//共享模式下的等待节点标示</font>
     static final Node SHARED = new Node();
 
     //独占模式下的等待节点标示
