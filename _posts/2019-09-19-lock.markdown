@@ -37,7 +37,7 @@ public abstract class AbstractQueuedSynchronizer
 
 ![avatar](../assets/1569318103969.jpg)
 
-``` java
+```java
 static final class Node {
     /**共享模式下的等待节点标示*/
     static final Node SHARED = new Node();
@@ -45,7 +45,7 @@ static final class Node {
     ==独占模式下的等待节点标示==
     static final Node EXCLUSIVE = null;
 
-    $\color{red}{waitStatus值之一：表示线程的 cancelled 状态}$
+    //waitStatus值之一：表示线程的 cancelled 状态
     static final int CANCELLED =  1;
 
     $\color{red}{waitStatus值之一：表示后继节点需要被唤醒}$
