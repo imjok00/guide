@@ -42,7 +42,7 @@ static final class Node {
     /**共享模式下的等待节点标示*/
     static final Node SHARED = new Node();
 
-    //独占模式下的等待节点标示
+    ==独占模式下的等待节点标示==
     static final Node EXCLUSIVE = null;
 
     $\color{red}{waitStatus值之一：表示线程的 cancelled 状态}$
