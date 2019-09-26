@@ -11,7 +11,7 @@
         repo: 'http://www.imjok.com',
         owner: 'sunhuang00@126.com',
         admin: ['sunhuang00@126.com'],
-        id: md5(location.pathname),
+        id: hex_md5(location.pathname),
         
     });
     gitalk.render('gitalk-container');
