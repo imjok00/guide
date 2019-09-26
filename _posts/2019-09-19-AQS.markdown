@@ -5,7 +5,7 @@ title:  "AbstractQueuedSynchronizer源码解析"
 tags: [JUC,lock,Condition]
 ---
 # AbstractQueuedSynchronizer（AQS）队列同步器
-AQS是JUC下lock实现最基础的理论了，通过熟悉他的代码，我们可以学习他让我们对JUC下的实现类有一个认识，他本身就包含了很多锁优化的思路。
+AQS是JUC下lock实现最基础的理论了，通过熟悉他的代码，我们可以学习他让我们对JUC下的各种实现类有一个认识，他本身就包含了很多锁优化的思路。
 
 我会通过对每一行代码的解读，好让不熟悉的同学能先有一个基础的概念，才能更好的理解源码里的思想。
 AQS作为阻塞锁和同步相关的基础框架，他依赖于一个FIFO的队列和一个原子值来表示状态，子类必须定义更改这个状态的方法。
@@ -26,6 +26,7 @@ isHeldExclusively
 
 ![avatar](../assets/1569318103969.jpg)
 
+那么先让我们进入Node类
 {% highlight java %} 
 static final class Node {
     /**共享模式下的等待节点标示*/
@@ -58,8 +59,10 @@ static final class Node {
     /**当前节点的线程*/
     volatile Thread thread;
 
-    /**当在Condition使用时，作为等待condition的后继节点,这里就多做一些说明了。<br>
-    通常我们在使用Condition时都是和lock配套的，当线程获取到锁时，才有资格进入condition，那么当condition条件未满足时，等待队列怎么实现呢，就是这个参数最关键啦！通过这个参数形成一个单向到链表。
+    /**
+       当在Condition使用时，作为等待condition的后继节点
+       通常我们在使用Condition时都是和lock配套的，当线程获取到锁时，才有资格进入condition，
+       那么当condition条件未满足时，等待队列怎么实现呢，就是这个参数最关键啦！通过这个参数形成一个单向到链表。
     */
     Node nextWaiter;
 
@@ -96,6 +99,9 @@ static final class Node {
 
 继续回到AbstractQueuedSynchronizer类
 {% highlight java %} 
+/**
+继承了AbstractOwnableSynchronizer，里面包含了set/get当前获取锁的线程方法。
+*/
 public abstract class AbstractQueuedSynchronizer
     extends AbstractOwnableSynchronizer
     implements java.io.Serializable {
@@ -157,7 +163,7 @@ public abstract class AbstractQueuedSynchronizer
         }
     }
 
-    /**当通过tryAcquire竞争失败，就会调用addWaiter包装成node入队<br>
+    /**当通过tryAcquire竞争失败，就会调用addWaiter包装成node入队
     	其中参数mode 使用Node.EXCLUSIVE/Node.SHARED来表示不同的锁类型
     */
     private Node addWaiter(Node mode) {
@@ -1101,19 +1107,25 @@ public abstract class AbstractQueuedSynchronizer
         public final void await() throws InterruptedException {
             if (Thread.interrupted())
                 throw new InterruptedException();
+            //加入尾巴节点
             Node node = addConditionWaiter();
+            //释放资源
             int savedState = fullyRelease(node);
             int interruptMode = 0;
+            //检查可能被transfer到CLH队列
             while (!isOnSyncQueue(node)) {
                 LockSupport.park(this);
                 if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
                     break;
             }
+            //尝试挂起
             if (acquireQueued(node, savedState) && interruptMode != THROW_IE)
                 interruptMode = REINTERRUPT;
             if (node.nextWaiter != null) // clean up if cancelled
+                //清理CANCEL状态的节点
                 unlinkCancelledWaiters();
             if (interruptMode != 0)
+                //根据参数决定异常方式
                 reportInterruptAfterWait(interruptMode);
         }
 

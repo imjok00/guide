@@ -1,0 +1,18 @@
+<link rel="stylesheet" href="../css/gitalk.css">
+<script src="../js/gitalk.min.js"></script> 
+<script type="text/javascript" src="../js/md5.js"></script>
+<div id="gitalk-container"></div>     
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+ 
+    // gitalk的主要参数
+        clientID: '756821d237e5f0298a57',
+        clientSecret: 'cc4187780d8f2177d06e4e2f8e2439367a9cda62',
+        repo: 'http://www.imjok.com',
+        owner: 'sunhuang00@126.com',
+        admin: ['sunhuang00@126.com'],
+        id: md5(location.pathname),
+        
+    });
+    gitalk.render('gitalk-container');
+</script>
