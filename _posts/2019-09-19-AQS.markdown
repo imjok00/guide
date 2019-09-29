@@ -319,9 +319,8 @@ public abstract class AbstractQueuedSynchronizer
     private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
         int ws = pred.waitStatus;
         /**
-            代表前驱释放资源后会通知后继结点
+           状态已经是SIGNAL 等待中的
         */
-        
         if (ws == Node.SIGNAL)
             return true;
         if (ws > 0) {
@@ -334,7 +333,7 @@ public abstract class AbstractQueuedSynchronizer
             pred.next = node;
         } else {
             /**
-                前驱状态正常，则将其状态置为SIGNAL，意为，释放资源后通知后继结点
+                前驱状态正常，则将其状态置为SIGNAL，意为等待状态了
             */
             compareAndSetWaitStatus(pred, ws, Node.SIGNAL);
         }
@@ -387,6 +386,7 @@ public abstract class AbstractQueuedSynchronizer
     }
 
     /**
+    tryAcquire失败时的状态处理
     与acquireQueued类似,这里是EXCLUSIVE模式先加到队尾addWaiter，然后进行park，只是在遇到Interrupt时抛异常
     */
     private void doAcquireInterruptibly(int arg)
