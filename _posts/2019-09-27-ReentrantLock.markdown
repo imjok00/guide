@@ -38,7 +38,7 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         private static final long serialVersionUID = -5179523762034025860L;
 
         /**
-         * 与Lock接口的lock()方法相同的实现。具体看子类的实现，公平/非公平的区别
+         * 为Lock接口的lock()方法提供的实现。具体看子类的实现，公平/非公平的区别
          */
         abstract void lock();
 
@@ -306,4 +306,4 @@ public class ReentrantLock implements Lock, java.io.Serializable {
 
 {% endhighlight %}
 
-所以ReentrantLock整个执行方法还是比较清晰，加锁都是利用了state字段的+1的原子操作来控制。
+ReentrantLock整个执行方法还是比较清晰，加锁都是利用了state字段的+1的原子操作来控制。所以重点还要理清AbstractQueuedSynchronizer的代码，这段就比较ok了。
