@@ -2,7 +2,7 @@
 layout: post
 category: "juc"
 title:  "ReentrantReadWriteLock源码解析"
-tags: [lock，源码]
+tags: [lock,JUC]
 ---
 ## ReentrantReadWriteLock源码解析
 
