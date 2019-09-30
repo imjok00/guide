@@ -12,7 +12,7 @@ ReentrantReadWriteLock是Java上关于读写锁的实现
 写锁：具有排他性，只允许一个线程拥有写锁
 使用范例
 ```
-* class RWDictionary {
+ * class RWDictionary {
  *   private final Map<String, Data> m = new TreeMap<String, Data>();
  *   private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
  *   private final Lock r = rwl.readLock();
@@ -706,3 +706,5 @@ public class ReentrantReadWriteLock
 }
 
 {% highlight %} 
+
+通过看读写锁的实现，把握核心的state被拆成前16位和后16位，再通过CAS操作，就很好理解了。
