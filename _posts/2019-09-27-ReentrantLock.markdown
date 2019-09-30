@@ -2,7 +2,7 @@
 layout: post
 category: "juc"
 title:  "ReentrantLock源码解析"
-tags: [JUC,lock]
+tags: [源码,lock]
 ---
 ## ReentrantLock源码解析
 ReentrantLock是具有排他性质的可重入锁，提供公平/非公平的策略。
