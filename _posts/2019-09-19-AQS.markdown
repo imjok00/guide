@@ -2,7 +2,7 @@
 layout: post
 category: "juc"
 title:  "AbstractQueuedSynchronizer源码解析"
-tags: [JUC,lock,Condition]
+tags: [AQS,AbstractQueuedSynchronizer,lock,Condition,源码解析]
 ---
 # AbstractQueuedSynchronizer（AQS）队列同步器
 AQS是JUC下lock实现最基础的理论了，通过熟悉他的代码，我们可以学习他让我们对JUC下的各种实现类有一个认识，他本身就包含了很多锁优化的思路。

@@ -2,7 +2,7 @@
 layout: post
 category: "juc"
 title:  "ReentrantReadWriteLock源码解析"
-tags: [JUC,lock]
+tags: [ReentrantReadWriteLock,lock,读写锁,AQS,源码解析]
 ---
 ## ReentrantReadWriteLock源码解析
 
@@ -328,13 +328,14 @@ public class ReentrantReadWriteLock
         final boolean tryWriteLock() {
             Thread current = Thread.currentThread();
             int c = getState();
-            if (c != 0) {
-                int w = exclusiveCount(c);
+            if (c != 0) {//这里就有读锁或写锁都不为0
+                int w = exclusiveCount(c);//判断写锁数量，如果为0，又不是当前线程持有，直接返回失败
                 if (w == 0 || current != getExclusiveOwnerThread())
                     return false;
                 if (w == MAX_COUNT)
                     throw new Error("Maximum lock count exceeded");
             }
+            //到这一步就排除了读锁+写锁的情况，就可以去cas了。
             if (!compareAndSetState(c, c + 1))
                 return false;
             setExclusiveOwnerThread(current);
@@ -346,7 +347,7 @@ public class ReentrantReadWriteLock
          */
         final boolean tryReadLock() {
             Thread current = Thread.currentThread();
-            for (;;) {
+            for (;;) {//这里加了个for循环，看来是没有结果不罢休了
                 int c = getState();
                 if (exclusiveCount(c) != 0 &&
                     getExclusiveOwnerThread() != current)//存在写锁就结束
@@ -354,7 +355,8 @@ public class ReentrantReadWriteLock
                 int r = sharedCount(c);
                 if (r == MAX_COUNT)
                     throw new Error("Maximum lock count exceeded");
-                if (compareAndSetState(c, c + SHARED_UNIT)) {//进行一次cas+1
+                if (compareAndSetState(c, c + SHARED_UNIT)) {//进行一次高16位+1操作
+                    //那么就进行
                     if (r == 0) {
                         firstReader = current;
                         firstReaderHoldCount = 1;
